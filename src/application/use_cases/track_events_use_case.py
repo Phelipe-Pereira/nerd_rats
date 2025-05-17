@@ -1,10 +1,12 @@
 import threading
 import time
 from src.domain.entities.tracking_data import TrackingData
+from src.domain.dtos.metrics_dto import MetricsDTO
 from src.infrastructure.services.mouse_service import MouseService
 from src.infrastructure.services.keyboard_service import KeyboardService
 from src.infrastructure.services.log_service import LogService
 from src.infrastructure.persistence.tracking_repository_impl import TrackingRepositoryImpl
+from src.infrastructure.services.metrics_api_service_impl import MetricsApiServiceImpl
 from src.infrastructure.services.stats_aggregator import StatsAggregator
 from src.infrastructure.config.settings import settings
 
@@ -15,6 +17,7 @@ class TrackEventsUseCase:
         self.keyboard_service = KeyboardService()
         self.repository = TrackingRepositoryImpl()
         self.log_service = LogService()
+        self.metrics_api_service = MetricsApiServiceImpl()
         self.running = False
         self.email = None
         self.github = None
@@ -38,6 +41,21 @@ class TrackEventsUseCase:
             settings.save_github(self.github)
         self.log_service.info(f"GitHub configurado: {self.github}")
 
+    def _send_metrics_to_api(self) -> None:
+        metrics = MetricsDTO(
+            user_github=self.github,
+            email=self.email,
+            quant_clicks=self.mouse_service.clicks,
+            quant_dist=self.mouse_service.distance,
+            quant_scrow=self.mouse_service.scrolls,
+            quant_keys=self.keyboard_service.key_press_count
+        )
+        
+        if self.metrics_api_service.send_metrics(metrics):
+            # Reset counters only if metrics were sent successfully
+            self.keyboard_service.reset_counter()
+            self.mouse_service.reset_counters()
+
     def start(self) -> None:
         self._configure_email()
         self._configure_github()
@@ -57,6 +75,16 @@ class TrackEventsUseCase:
             email=self.email
         )
         self.aggregator.start()
+
+        # Inicia thread para envio de métricas para API
+        self.metrics_thread = threading.Thread(target=self._metrics_loop)
+        self.metrics_thread.daemon = True
+        self.metrics_thread.start()
+
+    def _metrics_loop(self) -> None:
+        while self.running:
+            self._send_metrics_to_api()
+            time.sleep(settings.INTERVAL)
 
     def stop(self) -> None:
         self.running = False
