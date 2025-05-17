@@ -3,6 +3,7 @@ import os
 from datetime import datetime
 from typing import List, Dict, Tuple
 from src.domain.entities.tracking_data import TrackingData
+from src.infrastructure.services.log_service import LogService
 
 
 class LocalCache:
@@ -11,7 +12,8 @@ class LocalCache:
             os.getenv("APPDATA"), "nerd_rats", "cache"
         )
         os.makedirs(self.cache_dir, exist_ok=True)
-        print(f"Cache inicializado em: {self.cache_dir}")
+        self.log_service = LogService()
+        self.log_service.info(f"Cache inicializado em: {self.cache_dir}")
 
     def save_data(self, data: TrackingData) -> None:
         """Salva os dados em um arquivo local quando falha o envio ao servidor."""
@@ -22,13 +24,13 @@ class LocalCache:
         try:
             with open(filepath, "w") as f:
                 json.dump(data.to_dict(), f, indent=2)
-            print(f"Dados salvos com sucesso em: {filepath}")
+            self.log_service.info(f"Dados salvos com sucesso em: {filepath}")
         except Exception as e:
-            print(f"Erro ao salvar dados no cache: {e}")
+            self.log_service.error(f"Erro ao salvar dados no cache: {e}")
 
     def get_pending_data(self) -> List[Tuple[str, Dict]]:
         pending_data = []
-        print(f"Buscando dados pendentes em: {self.cache_dir}")
+        self.log_service.info(f"Buscando dados pendentes em: {self.cache_dir}")
 
         try:
             for filename in os.listdir(self.cache_dir):
@@ -37,18 +39,18 @@ class LocalCache:
                     with open(filepath, "r") as f:
                         data = json.load(f)
                         pending_data.append((filepath, data))
-                        print(f"Arquivo carregado: {filepath}")
+                        self.log_service.info(f"Arquivo carregado: {filepath}")
             
-            print(f"Total de {len(pending_data)} arquivos pendentes encontrados")
+            self.log_service.info(f"Total de {len(pending_data)} arquivos pendentes encontrados")
             return pending_data
         except Exception as e:
-            print(f"Erro ao carregar dados pendentes: {e}")
+            self.log_service.error(f"Erro ao carregar dados pendentes: {e}")
             return []
 
     def delete_file(self, filepath: str) -> None:
         """Remove um arquivo de cache após envio bem-sucedido."""
         try:
             os.remove(filepath)
-            print(f"Arquivo removido com sucesso: {filepath}")
+            self.log_service.info(f"Arquivo removido com sucesso: {filepath}")
         except Exception as e:
-            print(f"Erro ao deletar arquivo de cache {filepath}: {e}")
+            self.log_service.error(f"Erro ao deletar arquivo de cache {filepath}: {e}")

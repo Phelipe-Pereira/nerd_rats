@@ -1,11 +1,18 @@
 import os
 from typing import Optional
+from pathlib import Path
 
 
 class Settings:
     POST_URL: str = os.getenv("TRACKING_POST_URL", "http://localhost:5000/track")
     INTERVAL: int = int(os.getenv("TRACKING_INTERVAL", "15"))  # segundos
-    CONFIG_PATH: str = os.getenv("CONFIG_PATH", "/etc/nerd_rats.conf")
+    
+    # Usando AppData no Windows ou /etc no Linux
+    CONFIG_PATH: str = os.getenv(
+        "CONFIG_PATH",
+        str(Path.home() / "AppData" / "Local" / "nerd_rats" / "config.ini") if os.name == "nt"
+        else "/etc/nerd_rats.conf"
+    )
 
     @staticmethod
     def read_email() -> Optional[str]:

@@ -3,9 +3,8 @@ import time
 from src.domain.entities.tracking_data import TrackingData
 from src.infrastructure.services.mouse_service import MouseService
 from src.infrastructure.services.keyboard_service import KeyboardService
-from src.infrastructure.persistence.tracking_repository_impl import (
-    TrackingRepositoryImpl,
-)
+from src.infrastructure.services.log_service import LogService
+from src.infrastructure.persistence.tracking_repository_impl import TrackingRepositoryImpl
 from src.infrastructure.services.stats_aggregator import StatsAggregator
 from src.infrastructure.config.settings import settings
 
@@ -15,8 +14,10 @@ class TrackEventsUseCase:
         self.mouse_service = MouseService()
         self.keyboard_service = KeyboardService()
         self.repository = TrackingRepositoryImpl()
+        self.log_service = LogService()
         self.running = False
         self.email = None
+        self.github = None
         self.aggregator = None
 
     def _configure_email(self) -> None:
@@ -26,6 +27,7 @@ class TrackEventsUseCase:
                 "Digite seu email para configurar o rastreamento: "
             ).strip()
             settings.save_email(self.email)
+        self.log_service.info(f"Email configurado: {self.email}")
 
     def _configure_github(self) -> None:
         self.github = settings.read_github()
@@ -34,6 +36,7 @@ class TrackEventsUseCase:
                 "Digite seu usuário do GitHub: "
             ).strip()
             settings.save_github(self.github)
+        self.log_service.info(f"GitHub configurado: {self.github}")
 
     def start(self) -> None:
         self._configure_email()
@@ -42,6 +45,8 @@ class TrackEventsUseCase:
         self.running = True
         self.mouse_service.start()
         self.keyboard_service.start()
+
+        self.log_service.info("Iniciando rastreamento de eventos")
 
         # Configura e inicia o agregador
         self.aggregator = StatsAggregator(
@@ -59,3 +64,4 @@ class TrackEventsUseCase:
             self.aggregator.stop()
         self.mouse_service.stop()
         self.keyboard_service.stop()
+        self.log_service.info("Rastreamento de eventos finalizado")
