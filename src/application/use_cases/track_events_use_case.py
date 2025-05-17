@@ -70,7 +70,6 @@ class TrackEventsUseCase:
         self.aggregator = StatsAggregator(
             mouse_service=self.mouse_service,
             keyboard_service=self.keyboard_service,
-            repository=self.repository,
             user_github=self.github,
             email=self.email
         )
