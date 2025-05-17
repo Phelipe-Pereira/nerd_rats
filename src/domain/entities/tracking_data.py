@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 
 
@@ -9,6 +9,7 @@ class TrackingData:
     mouse_distance_cm: float
     clicks: int
     scrolls: int
+    timestamp: datetime = field(default_factory=datetime.now)
 
     def to_dict(self) -> dict:
         return {
@@ -17,5 +18,5 @@ class TrackingData:
             "mouse_distance_cm": round(self.mouse_distance_cm, 2),
             "clicks": self.clicks,
             "scrolls": self.scrolls,
-            "timestamp": self.timestamp.isoformat(),
+            "timestamp": self.timestamp.isoformat()
         }

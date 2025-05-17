@@ -16,6 +16,7 @@ class StatsAggregator:
         self.email = email
         self.running = False
         self._aggregation_thread = None
+        self._lock = threading.Lock()
         self.log_service = LogService()
         self._print_client_info()
 
@@ -31,17 +32,18 @@ class StatsAggregator:
                 # Aguarda o intervalo antes de coletar
                 time.sleep(settings.INTERVAL)
 
-                # Coleta estatísticas
-                mouse_stats = self.mouse_service.get_stats()
-                keyboard_stats = self.keyboard_service.get_stats()
+                with self._lock:
+                    # Coleta estatísticas
+                    mouse_stats = self.mouse_service.get_stats()
+                    keyboard_stats = self.keyboard_service.get_stats()
 
-                # Combina as estatísticas
-                stats = {
-                    "user_github": self.user_github,
-                    "email": self.email,
-                    **mouse_stats,
-                    **keyboard_stats
-                }
+                    # Combina as estatísticas
+                    stats = {
+                        "user_github": self.user_github,
+                        "email": self.email,
+                        **mouse_stats,
+                        **keyboard_stats
+                    }
 
                 self.log_service.info("=== Dados do Cliente ===")
                 self.log_service.info(f"GitHub: {self.user_github}")
@@ -59,14 +61,16 @@ class StatsAggregator:
 
     def start(self) -> None:
         """Inicia o agregador de estatísticas"""
-        self.running = True
-        self._aggregation_thread = threading.Thread(target=self._aggregate_and_send, daemon=True)
-        self._aggregation_thread.start()
-        self.log_service.info("Agregador de estatísticas iniciado")
+        with self._lock:
+            self.running = True
+            self._aggregation_thread = threading.Thread(target=self._aggregate_and_send, daemon=True)
+            self._aggregation_thread.start()
+            self.log_service.info("Agregador de estatísticas iniciado")
 
     def stop(self) -> None:
         """Para o agregador de estatísticas"""
-        self.running = False
-        if self._aggregation_thread:
-            self._aggregation_thread.join(timeout=1)
-        self.log_service.info("Agregador de estatísticas parado")
+        with self._lock:
+            self.running = False
+            if self._aggregation_thread:
+                self._aggregation_thread.join(timeout=1)
+            self.log_service.info("Agregador de estatísticas parado")
