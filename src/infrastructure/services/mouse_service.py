@@ -1,6 +1,8 @@
 from pynput import mouse
 from typing import Callable
 import threading
+import sys
+import os
 
 
 class MouseService:
@@ -11,6 +13,15 @@ class MouseService:
         self.last_position = None
         self._listener = None
         self._lock = threading.Lock()
+        self._configure_python_path()
+
+    def _configure_python_path(self) -> None:
+        """Configura o caminho do Python para o pynput"""
+        if hasattr(sys, 'real_prefix') or (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix):
+            # Estamos em um ambiente virtual
+            python_path = os.path.join(sys.prefix, 'python.exe' if os.name == 'nt' else 'python')
+            if os.path.exists(python_path):
+                os.environ['PYTHONEXECUTABLE'] = python_path
 
     def on_move(self, x: int, y: int) -> None:
         with self._lock:
@@ -31,10 +42,14 @@ class MouseService:
             self.scrolls += 1
 
     def start(self) -> None:
-        self._listener = mouse.Listener(
-            on_move=self.on_move, on_click=self.on_click, on_scroll=self.on_scroll
-        )
-        self._listener.start()
+        try:
+            self._listener = mouse.Listener(
+                on_move=self.on_move, on_click=self.on_click, on_scroll=self.on_scroll
+            )
+            self._listener.start()
+        except Exception as e:
+            print(f"Erro ao iniciar o listener do mouse: {str(e)}")
+            raise
 
     def stop(self) -> None:
         if self._listener:
