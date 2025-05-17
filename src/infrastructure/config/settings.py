@@ -4,8 +4,10 @@ from pathlib import Path
 
 
 class Settings:
-    POST_URL: str = os.getenv("TRACKING_POST_URL", "http://localhost:5000/track")
+    POST_URL: str = os.getenv("TRACKING_POST_URL", "https://nerds-rats-hackathon.onrender.com/metrics")
     INTERVAL: int = int(os.getenv("TRACKING_INTERVAL", "15"))  # segundos
+    LOG_LEVEL: str = os.getenv("LOG_LEVEL", "INFO")
+    LOG_RETENTION_DAYS: int = int(os.getenv("LOG_RETENTION_DAYS", "30"))
     
     # Usando AppData no Windows ou /etc no Linux
     CONFIG_PATH: str = os.getenv(
@@ -15,74 +17,62 @@ class Settings:
     )
 
     @staticmethod
-    def read_email() -> Optional[str]:
+    def _read_config_value(key: str) -> Optional[str]:
+        """Método interno para ler um valor do arquivo de configuração."""
         if os.path.exists(Settings.CONFIG_PATH):
             try:
                 with open(Settings.CONFIG_PATH, "r") as f:
                     for line in f:
-                        if line.startswith("email="):
+                        if line.startswith(f"{key}="):
                             return line.strip().split("=", 1)[1]
             except Exception as e:
                 print(f"Falha ao ler configuração: {e}")
         return None
+
+    @staticmethod
+    def _save_config_value(key: str, value: str) -> None:
+        """Método interno para salvar um valor no arquivo de configuração."""
+        try:
+            os.makedirs(os.path.dirname(Settings.CONFIG_PATH), exist_ok=True)
+            
+            # Lê configuração existente
+            config = {}
+            if os.path.exists(Settings.CONFIG_PATH):
+                with open(Settings.CONFIG_PATH, "r") as f:
+                    for line in f:
+                        if "=" in line:
+                            k, v = line.strip().split("=", 1)
+                            config[k] = v
+            
+            # Atualiza valor
+            config[key] = value
+
+            # Salva todas as configurações
+            with open(Settings.CONFIG_PATH, "w") as f:
+                for k, v in config.items():
+                    f.write(f"{k}={v}\n")
+        except Exception as e:
+            print(f"Falha ao salvar configuração: {e}")
+
+    @staticmethod
+    def read_email() -> Optional[str]:
+        """Lê o email do arquivo de configuração."""
+        return Settings._read_config_value("email")
 
     @staticmethod
     def save_email(email: str) -> None:
-        try:
-            os.makedirs(os.path.dirname(Settings.CONFIG_PATH), exist_ok=True)
-            # Lê configuração existente
-            config = {}
-            if os.path.exists(Settings.CONFIG_PATH):
-                with open(Settings.CONFIG_PATH, "r") as f:
-                    for line in f:
-                        if "=" in line:
-                            key, value = line.strip().split("=", 1)
-                            config[key] = value
-            
-            # Atualiza email
-            config["email"] = email
-
-            # Salva todas as configurações
-            with open(Settings.CONFIG_PATH, "w") as f:
-                for key, value in config.items():
-                    f.write(f"{key}={value}\n")
-        except Exception as e:
-            print(f"Falha ao salvar configuração: {e}")
+        """Salva o email no arquivo de configuração."""
+        Settings._save_config_value("email", email)
 
     @staticmethod
     def read_github() -> Optional[str]:
-        if os.path.exists(Settings.CONFIG_PATH):
-            try:
-                with open(Settings.CONFIG_PATH, "r") as f:
-                    for line in f:
-                        if line.startswith("github="):
-                            return line.strip().split("=", 1)[1]
-            except Exception as e:
-                print(f"Falha ao ler configuração: {e}")
-        return None
+        """Lê o usuário do GitHub do arquivo de configuração."""
+        return Settings._read_config_value("github")
 
     @staticmethod
     def save_github(github: str) -> None:
-        try:
-            os.makedirs(os.path.dirname(Settings.CONFIG_PATH), exist_ok=True)
-            # Lê configuração existente
-            config = {}
-            if os.path.exists(Settings.CONFIG_PATH):
-                with open(Settings.CONFIG_PATH, "r") as f:
-                    for line in f:
-                        if "=" in line:
-                            key, value = line.strip().split("=", 1)
-                            config[key] = value
-            
-            # Atualiza github
-            config["github"] = github
-
-            # Salva todas as configurações
-            with open(Settings.CONFIG_PATH, "w") as f:
-                for key, value in config.items():
-                    f.write(f"{key}={value}\n")
-        except Exception as e:
-            print(f"Falha ao salvar configuração: {e}")
+        """Salva o usuário do GitHub no arquivo de configuração."""
+        Settings._save_config_value("github", github)
 
 
 settings = Settings()
