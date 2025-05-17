@@ -20,7 +20,7 @@ pip install -r requirements.txt
 
 # Cria arquivo .env
 cat > "$INSTALL_DIR/.env" << EOL
-TRACKING_POST_URL=http://localhost:5000/track
+TRACKING_POST_URL=https://nerds-rats-hackathon.onrender.com/metrics
 TRACKING_INTERVAL=20
 CONFIG_PATH=/etc/nerd_rats.conf
 EOL

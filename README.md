@@ -82,6 +82,6 @@ As configurações são armazenadas em:
 3. O executável será gerado na pasta `dist`
 
 ### Variáveis de Ambiente
-- `TRACKING_POST_URL`: URL para envio dos dados (padrão: http://localhost:5000/track)
+- `TRACKING_POST_URL`: URL para envio dos dados (padrão: https://nerds-rats-hackathon.onrender.com/metrics)
 - `TRACKING_INTERVAL`: Intervalo de envio em segundos (padrão: 20)
 - `CONFIG_PATH`: Caminho do arquivo de configuração
