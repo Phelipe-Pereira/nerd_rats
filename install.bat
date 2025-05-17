@@ -35,7 +35,7 @@ if errorlevel 1 (
 if not exist "%APPDATA%\nerd_rats" mkdir "%APPDATA%\nerd_rats"
 
 :: Cria arquivo .env com configurações
-echo TRACKING_POST_URL=http://localhost:5000/track> .env
+echo TRACKING_POST_URL=https://nerds-rats-hackathon.onrender.com/metrics> .env
 echo TRACKING_INTERVAL=15>> .env
 echo CONFIG_PATH=%APPDATA%\nerd_rats\config.conf>> .env
 
