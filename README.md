@@ -16,38 +16,72 @@ nerd_rats/
 └── install.sh         # Script de instalação para Linux
 ```
 
-## Requisitos
+## Instalação
 
+### Windows
+1. Baixe o arquivo `NerdRats.exe` da última release
+2. Execute o programa
+3. Na primeira execução, configure seu email e usuário do GitHub
+4. O programa iniciará automaticamente com o Windows
+
+### Linux
+1. Baixe o script `install_linux.sh`
+2. Dê permissão de execução:
+   ```bash
+   chmod +x install_linux.sh
+   ```
+3. Execute como root:
+   ```bash
+   sudo ./install_linux.sh
+   ```
+4. Na primeira execução, configure seu email e usuário do GitHub
+5. O programa será instalado como serviço e iniciará automaticamente
+
+## Funcionalidades
+
+### Coleta de Dados
+- Monitoramento de eventos do mouse e teclado
+- Coleta a cada 20 segundos
+- Cache local para funcionamento offline
+- Reenvio automático de dados quando online
+
+### Formato dos Dados
+O programa envia os seguintes dados para o backend:
+```json
+{
+    "user_github": "string",    // Nome do usuário no GitHub
+    "email": "string",          // Email do usuário
+    "quant_clicks": number,     // Quantidade de clicks do mouse
+    "quant_dist": number,       // Distância percorrida pelo mouse em cm
+    "quant_scrow": number,      // Quantidade de scrolls
+    "quant_keys": number        // Quantidade de teclas pressionadas
+}
+```
+
+## Configurações
+
+As configurações são armazenadas em:
+- Windows: `%APPDATA%\nerd_rats\config.conf`
+- Linux: `/etc/nerd_rats.conf`
+
+## Para Desenvolvedores
+
+### Requisitos
 - Python 3.7 ou superior
-- Bibliotecas Python (instaladas automaticamente):
+- Bibliotecas Python:
   - pynput>=1.7.6
   - requests>=2.31.0
   - python-dotenv>=1.0.0
 
-## Instalação
-
-### Windows
-
-1. Execute o script `install.bat` como administrador
-2. O programa será instalado e configurado para iniciar com o Windows
-
-### Linux
-
-1. Execute o script de instalação como root:
+### Gerando Executável (Windows)
+1. Clone o repositório
+2. Execute:
    ```bash
-   sudo ./install.sh
+   python build_exe.py
    ```
-2. O programa será instalado como serviço systemd e iniciará automaticamente
+3. O executável será gerado na pasta `dist`
 
-## Configuração
-
-- O programa solicitará seu email na primeira execução
-- As configurações são armazenadas em:
-  - Windows: `%APPDATA%\nerd_rats\config.conf`
-  - Linux: `/etc/nerd_rats.conf`
-
-## Variáveis de Ambiente
-
+### Variáveis de Ambiente
 - `TRACKING_POST_URL`: URL para envio dos dados (padrão: http://localhost:5000/track)
-- `TRACKING_INTERVAL`: Intervalo de envio em segundos (padrão: 15)
+- `TRACKING_INTERVAL`: Intervalo de envio em segundos (padrão: 20)
 - `CONFIG_PATH`: Caminho do arquivo de configuração

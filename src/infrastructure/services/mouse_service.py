@@ -2,6 +2,7 @@ from pynput import mouse
 from typing import Callable
 import threading
 
+
 class MouseService:
     def __init__(self):
         self.distance = 0
@@ -14,7 +15,7 @@ class MouseService:
         if self.last_position is not None:
             dx = x - self.last_position[0]
             dy = y - self.last_position[1]
-            distance = (dx**2 + dy**2)**0.5 * 0.026  # conversão para cm
+            distance = (dx**2 + dy**2) ** 0.5 * 0.026  # conversão para cm
             self.distance += distance
         self.last_position = (x, y)
 
@@ -27,9 +28,7 @@ class MouseService:
 
     def start(self) -> None:
         self._listener = mouse.Listener(
-            on_move=self.on_move,
-            on_click=self.on_click,
-            on_scroll=self.on_scroll
+            on_move=self.on_move, on_click=self.on_click, on_scroll=self.on_scroll
         )
         self._listener.start()
 
@@ -37,8 +36,16 @@ class MouseService:
         if self._listener:
             self._listener.stop()
 
+    def get_stats(self) -> dict:
+        """Retorna as estatísticas atuais do mouse"""
+        return {
+            "quant_clicks": self.clicks,
+            "quant_dist": round(self.distance, 2),
+            "quant_scrow": self.scrolls
+        }
+
     def reset_counters(self) -> None:
         self.distance = 0
         self.clicks = 0
         self.scrolls = 0
-        self.last_position = None 
+        self.last_position = None
