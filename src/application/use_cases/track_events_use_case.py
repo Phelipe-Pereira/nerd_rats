@@ -3,6 +3,7 @@ import time
 from src.domain.entities.tracking_data import TrackingData
 from src.infrastructure.services.mouse_service import MouseService
 from src.infrastructure.services.keyboard_service import KeyboardService
+from src.infrastructure.services.log_service import LogService
 from src.infrastructure.persistence.tracking_repository_impl import TrackingRepositoryImpl
 from src.infrastructure.config.settings import settings
 
@@ -11,6 +12,7 @@ class TrackEventsUseCase:
         self.mouse_service = MouseService()
         self.keyboard_service = KeyboardService()
         self.repository = TrackingRepositoryImpl()
+        self.log_service = LogService()
         self.running = False
         self.email = None
 
@@ -19,6 +21,7 @@ class TrackEventsUseCase:
         if not self.email:
             self.email = input("Digite seu email para configurar o rastreamento: ").strip()
             settings.save_email(self.email)
+        self.log_service.info(f"Email configurado: {self.email}")
 
     def _send_data_periodically(self) -> None:
         while self.running:
@@ -30,7 +33,15 @@ class TrackEventsUseCase:
                 scrolls=self.mouse_service.scrolls
             )
 
-            self.repository.send_tracking_data(tracking_data)
+            try:
+                self.repository.send_tracking_data(tracking_data)
+                self.log_service.info(
+                    f"Dados enviados: {tracking_data.keys_pressed} teclas, "
+                    f"{tracking_data.mouse_distance_cm:.2f}cm mouse, "
+                    f"{tracking_data.clicks} clicks, {tracking_data.scrolls} scrolls"
+                )
+            except Exception as e:
+                self.log_service.error(f"Erro ao enviar dados: {str(e)}")
 
             # Reset counters
             self.keyboard_service.reset_counter()
@@ -45,6 +56,8 @@ class TrackEventsUseCase:
         self.mouse_service.start()
         self.keyboard_service.start()
 
+        self.log_service.info("Iniciando rastreamento de eventos")
+
         # Inicia thread para envio periódico dos dados
         threading.Thread(
             target=self._send_data_periodically,
@@ -54,4 +67,5 @@ class TrackEventsUseCase:
     def stop(self) -> None:
         self.running = False
         self.mouse_service.stop()
-        self.keyboard_service.stop() 
+        self.keyboard_service.stop()
+        self.log_service.info("Rastreamento de eventos finalizado") 
