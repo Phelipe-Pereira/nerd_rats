@@ -1,5 +1,11 @@
 import signal
 import sys
+import os
+import sys
+
+# Adiciona o diretório raiz ao PYTHONPATH
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
+
 from src.application.use_cases.track_events_use_case import TrackEventsUseCase
 
 def main():
