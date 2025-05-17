@@ -41,10 +41,33 @@ nerd_rats/
 
 ## Configuração
 
-- O programa solicitará seu email na primeira execução
+- Na primeira execução, o programa solicitará:
+  - Seu email
+  - Seu usuário do GitHub
 - As configurações são armazenadas em:
   - Windows: `%APPDATA%\nerd_rats\config.conf`
   - Linux: `/etc/nerd_rats.conf`
+
+## Funcionalidades
+
+### Coleta de Dados
+- Monitoramento de eventos do mouse e teclado
+- Coleta a cada 20 segundos
+- Cache local para funcionamento offline
+- Reenvio automático de dados quando online
+
+### Formato dos Dados
+O programa envia os seguintes dados para o backend:
+```json
+{
+    "user_github": "string",    // Nome do usuário no GitHub
+    "email": "string",          // Email do usuário
+    "quant_clicks": number,     // Quantidade de clicks do mouse
+    "quant_dist": number,       // Distância percorrida pelo mouse em cm
+    "quant_scrow": number,      // Quantidade de scrolls
+    "quant_keys": number        // Quantidade de teclas pressionadas
+}
+```
 
 ## Variáveis de Ambiente
 
