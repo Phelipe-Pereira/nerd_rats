@@ -1,5 +1,6 @@
 from pynput import keyboard
 
+
 class KeyboardService:
     def __init__(self):
         self.key_press_count = 0
@@ -16,5 +17,11 @@ class KeyboardService:
         if self._listener:
             self._listener.stop()
 
+    def get_stats(self) -> dict:
+        """Retorna as estatísticas atuais do teclado"""
+        return {
+            "quant_keys": self.key_press_count
+        }
+
     def reset_counter(self) -> None:
-        self.key_press_count = 0 
+        self.key_press_count = 0
