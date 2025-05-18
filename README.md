@@ -78,6 +78,7 @@ nerd_rats/
 O programa envia os seguintes dados para o backend:
 
 ```json
+
 {
     "user_github": "string",    // Nome do usuário no GitHub
     "email": "string",          // Email do usuário
