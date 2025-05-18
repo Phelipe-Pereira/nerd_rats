@@ -1,5 +1,7 @@
 import threading
 import time
+import tkinter as tk
+from tkinter import simpledialog
 from src.domain.entities.tracking_data import TrackingData
 from src.domain.dtos.metrics_dto import MetricsDTO
 from src.infrastructure.services.mouse_service import MouseService
@@ -22,23 +24,46 @@ class TrackEventsUseCase:
         self.email = None
         self.github = None
         self.aggregator = None
+        self.root = None
+
+    def _show_input_dialog(self, title, prompt):
+        """Mostra uma janela de diálogo para input"""
+        if not self.root:
+            self.root = tk.Tk()
+            self.root.withdraw()  # Esconde a janela principal
+        
+        result = simpledialog.askstring(title, prompt)
+        if not result:
+            self.log_service.error(f"Usuário não forneceu {title.lower()}")
+            raise ValueError(f"{title} é obrigatório")
+        return result.strip()
 
     def _configure_email(self) -> None:
         self.email = settings.read_email()
         if not self.email:
-            self.email = input(
-                "Digite seu email para configurar o rastreamento: "
-            ).strip()
-            settings.save_email(self.email)
+            try:
+                self.email = self._show_input_dialog(
+                    "Email",
+                    "Digite seu email para configurar o rastreamento:"
+                )
+                settings.save_email(self.email)
+            except ValueError as e:
+                self.log_service.error(str(e))
+                raise
         self.log_service.info(f"Email configurado: {self.email}")
 
     def _configure_github(self) -> None:
         self.github = settings.read_github()
         if not self.github:
-            self.github = input(
-                "Digite seu usuário do GitHub: "
-            ).strip()
-            settings.save_github(self.github)
+            try:
+                self.github = self._show_input_dialog(
+                    "GitHub",
+                    "Digite seu usuário do GitHub:"
+                )
+                settings.save_github(self.github)
+            except ValueError as e:
+                self.log_service.error(str(e))
+                raise
         self.log_service.info(f"GitHub configurado: {self.github}")
 
     def _send_metrics_to_api(self) -> None:
@@ -57,28 +82,33 @@ class TrackEventsUseCase:
             self.mouse_service.reset_counters()
 
     def start(self) -> None:
-        self._configure_email()
-        self._configure_github()
+        try:
+            self._configure_email()
+            self._configure_github()
 
-        self.running = True
-        self.mouse_service.start()
-        self.keyboard_service.start()
+            self.running = True
+            self.mouse_service.start()
+            self.keyboard_service.start()
 
-        self.log_service.info("Iniciando rastreamento de eventos")
+            self.log_service.info("Iniciando rastreamento de eventos")
 
-        # Configura e inicia o agregador
-        self.aggregator = StatsAggregator(
-            mouse_service=self.mouse_service,
-            keyboard_service=self.keyboard_service,
-            user_github=self.github,
-            email=self.email
-        )
-        self.aggregator.start()
+            # Configura e inicia o agregador
+            self.aggregator = StatsAggregator(
+                mouse_service=self.mouse_service,
+                keyboard_service=self.keyboard_service,
+                user_github=self.github,
+                email=self.email
+            )
+            self.aggregator.start()
 
-        # Inicia thread para envio de métricas para API
-        self.metrics_thread = threading.Thread(target=self._metrics_loop)
-        self.metrics_thread.daemon = True
-        self.metrics_thread.start()
+            # Inicia thread para envio de métricas para API
+            self.metrics_thread = threading.Thread(target=self._metrics_loop)
+            self.metrics_thread.daemon = True
+            self.metrics_thread.start()
+
+        except Exception as e:
+            self.log_service.error(f"Erro ao iniciar rastreamento: {str(e)}")
+            raise
 
     def _metrics_loop(self) -> None:
         while self.running:
@@ -91,4 +121,6 @@ class TrackEventsUseCase:
             self.aggregator.stop()
         self.mouse_service.stop()
         self.keyboard_service.stop()
+        if self.root:
+            self.root.destroy()
         self.log_service.info("Rastreamento de eventos finalizado")

@@ -27,12 +27,20 @@ Um programa multiplataforma que monitora eventos do computador (cliques do mouse
 
 ### Windows
 
-1. Baixe o arquivo `NerdRats.exe` da [última release](https://github.com/seu-usuario/nerd_rats/releases)
-2. Execute o programa como administrador
+> ⚠️ **Importante**: O executável `NerdRats.exe` está localizado na pasta `dist` do projeto. Se você baixou o código fonte, primeiro precisa gerar o executável seguindo as instruções na seção [Gerando Executável](#gerando-executável).
+
+1. Se você baixou o repositório completo:
+   - Navegue até a pasta `dist`
+   - Execute o arquivo `NerdRats.exe` como administrador
+
+2. Se você baixou apenas o executável da [última release](https://github.com/seu-usuario/nerd_rats/releases):
+   - Execute o `NerdRats.exe` diretamente como administrador
+
 3. Na primeira execução:
    - Configure seu email
    - Configure seu usuário do GitHub
-4. O programa iniciará automaticamente com o Windows
+
+4. O programa iniciará automaticamente com the Windows
 
 ### Linux
 
@@ -144,7 +152,7 @@ python-dotenv>=1.0.0   # Gerenciamento de variáveis de ambiente
 ```bash
 python build_exe.py
 ```
-O executável será gerado na pasta `dist`
+O executável `NerdRats.exe` será gerado na pasta `dist`. Este é o único arquivo necessário para distribuição.
 
 #### Linux
 ```bash
@@ -214,3 +222,54 @@ Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para ma
 ## 🤝 Contribuindo
 
 Contribuições são bem-vindas! Por favor, leia o [CONTRIBUTING.md](CONTRIBUTING.md) para detalhes sobre nosso código de conduta e o processo para enviar pull requests.
+
+## 📦 Distribuindo o Executável
+
+O `NerdRats.exe` foi compilado como um arquivo único e autocontido, incluindo todas as dependências necessárias. Isso significa que você pode distribuir apenas o arquivo `dist/NerdRats.exe` e ele funcionará em qualquer máquina Windows compatível.
+
+### Requisitos Mínimos do Sistema
+- Windows 7 ou superior
+- Visual C++ Redistributable 2015-2022 instalado
+- 50MB de espaço em disco
+- Permissões de administrador para primeira execução
+
+### Opções de Distribuição
+
+1. **GitHub Releases** (Recomendado)
+   - Crie uma nova release no GitHub
+   - Faça upload do `NerdRats.exe`
+   - Adicione notas da versão
+   - Forneça o link direto para download
+
+2. **Serviços de Armazenamento**
+   - Google Drive
+   - Dropbox
+   - OneDrive
+   - Mega
+
+3. **Servidor Web Próprio**
+   - Hospede o arquivo em seu servidor
+   - Forneça link direto para download
+   - Use HTTPS para garantir downloads seguros
+
+### Notas Importantes
+- O executável criará automaticamente suas pastas de configuração e logs quando executado
+- Na primeira execução, solicite ao usuário que execute como administrador
+- O programa salvará seus dados em `%APPDATA%\nerd_rats`, independente de onde o .exe estiver
+- Não é necessário nenhum processo de instalação
+
+## NerdRats v1.0.1
+
+### 🚀 Novidades
+- Executável atualizado com correções de bugs
+- Melhor gerenciamento de logs
+- Suporte a Visual C++ Redistributable 2015-2022
+
+### 📥 Download
+- Baixe apenas o arquivo `NerdRats.exe`
+- Execute como administrador na primeira vez
+- O programa criará automaticamente suas pastas de configuração
+
+### 🔧 Requisitos
+- Windows 7 ou superior
+- Visual C++ Redistributable 2015-2022
