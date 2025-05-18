@@ -235,25 +235,6 @@ O `NerdRats.exe` foi compilado como um arquivo único e autocontido, incluindo t
 - 50MB de espaço em disco
 - Permissões de administrador para primeira execução
 
-### Opções de Distribuição
-
-1. **GitHub Releases** (Recomendado)
-   - Crie uma nova release no GitHub
-   - Faça upload do `NerdRats.exe`
-   - Adicione notas da versão
-   - Forneça o link direto para download
-
-2. **Serviços de Armazenamento**
-   - Google Drive
-   - Dropbox
-   - OneDrive
-   - Mega
-
-3. **Servidor Web Próprio**
-   - Hospede o arquivo em seu servidor
-   - Forneça link direto para download
-   - Use HTTPS para garantir downloads seguros
-
 ### Notas Importantes
 - O executável criará automaticamente suas pastas de configuração e logs quando executado
 - Na primeira execução, solicite ao usuário que execute como administrador
