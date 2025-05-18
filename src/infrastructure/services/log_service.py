@@ -7,9 +7,13 @@ from src.infrastructure.config.settings import settings
 
 class LogService:
     def __init__(self):
-        # Configura o diretório de logs
-        self.logs_dir = Path(__file__).parent.parent / 'logs'
-        self.logs_dir.mkdir(exist_ok=True)
+        # Configura o diretório de logs baseado no sistema operacional
+        if os.name == 'nt':  # Windows
+            self.logs_dir = Path(os.getenv('APPDATA')) / 'nerd_rats' / 'logs'
+        else:  # Linux/Unix
+            self.logs_dir = Path('/var/log/nerd_rats')
+        
+        self.logs_dir.mkdir(parents=True, exist_ok=True)
         
         # Configura o arquivo de log atual
         self.current_log_file = self._get_current_log_file()

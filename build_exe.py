@@ -36,7 +36,6 @@ def build_windows_exe():
         '--hidden-import=pynput.mouse._win32',
         '--add-data=.env.example;.',         # Inclui arquivo de exemplo
         '--add-data=README.md;.',            # Inclui documentação
-        '--icon=assets/icon.ico',            # Ícone do executável
         f'--workpath={os.path.join("build", "temp")}',  # Diretório temporário
         f'--distpath={os.path.join("dist")}',  # Diretório de saída
         '--clean',                           # Limpa builds anteriores

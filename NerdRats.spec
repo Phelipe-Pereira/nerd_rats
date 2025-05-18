@@ -5,7 +5,7 @@ a = Analysis(
     ['src\\presentation\\cli\\main.py'],
     pathex=[],
     binaries=[],
-    datas=[],
+    datas=[('.env.example', '.'), ('README.md', '.')],
     hiddenimports=['pynput.keyboard._win32', 'pynput.mouse._win32'],
     hookspath=[],
     hooksconfig={},
