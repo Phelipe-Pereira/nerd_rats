@@ -3,8 +3,13 @@
 [![Windows](https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/seu-usuario/nerd_rats/releases)
 [![Linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black)](https://github.com/seu-usuario/nerd_rats/releases)
 [![Python](https://img.shields.io/badge/Python-3.7+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![Release](https://img.shields.io/badge/Release-v1.0.3-blue?style=for-the-badge)](https://github.com/seu-usuario/nerd_rats/releases/latest)
 
 Um programa multiplataforma que monitora eventos do computador (cliques do mouse, teclas pressionadas, distância percorrida pelo mouse e rolagens) e envia os dados periodicamente via POST para análise de produtividade.
+
+## 📥 Download Rápido
+
+> ⚠️ **Importante**: Para começar rapidamente, baixe o executável da [última release (v1.0.3)](https://github.com/seu-usuario/nerd_rats/releases/latest).
 
 ## ✨ Funcionalidades
 
@@ -27,20 +32,16 @@ Um programa multiplataforma que monitora eventos do computador (cliques do mouse
 
 ### Windows
 
-> ⚠️ **Importante**: O executável `NerdRats.exe` está localizado na pasta `dist` do projeto. Se você baixou o código fonte, primeiro precisa gerar o executável seguindo as instruções na seção [Gerando Executável](#gerando-executável).
+1. **Método Recomendado - Download da Release**:
+   - Acesse a [página de releases](https://github.com/seu-usuario/nerd_rats/releases)
+   - Baixe o `NerdRats.exe` da última versão (v1.0.3)
+   - Execute o arquivo como administrador
+   - Configure seu email e GitHub quando solicitado
 
-1. Se você baixou o repositório completo:
-   - Navegue até a pasta `dist`
-   - Execute o arquivo `NerdRats.exe` como administrador
-
-2. Se você baixou apenas o executável da [última release](https://github.com/seu-usuario/nerd_rats/releases):
-   - Execute o `NerdRats.exe` diretamente como administrador
-
-3. Na primeira execução:
-   - Configure seu email
-   - Configure seu usuário do GitHub
-
-4. O programa iniciará automaticamente com the Windows
+2. **Método Alternativo - Compilação Manual**:
+   - Clone o repositório
+   - Siga as instruções em [Gerando Executável](#gerando-executável)
+   - O executável será gerado na pasta `dist`
 
 ### Linux
 
