@@ -1,6 +1,7 @@
 import json
 import os
 from datetime import datetime
+from pathlib import Path
 from typing import List, Dict, Tuple
 from src.domain.entities.tracking_data import TrackingData
 from src.infrastructure.services.log_service import LogService
@@ -8,9 +9,15 @@ from src.infrastructure.services.log_service import LogService
 
 class LocalCache:
     def __init__(self, cache_dir: str = None):
-        self.cache_dir = cache_dir or os.path.join(
-            os.getenv("APPDATA"), "nerd_rats", "cache"
-        )
+        if cache_dir:
+            self.cache_dir = cache_dir
+        else:
+            # Define o diretório de cache baseado no sistema operacional
+            if os.name == 'nt':  # Windows
+                self.cache_dir = str(Path(os.getenv('APPDATA')) / 'nerd_rats' / 'cache')
+            else:  # Linux/Unix
+                self.cache_dir = str(Path('/var/cache/nerd_rats'))
+        
         os.makedirs(self.cache_dir, exist_ok=True)
         self.log_service = LogService()
         self.log_service.info(f"Cache inicializado em: {self.cache_dir}")
