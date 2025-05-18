@@ -4,10 +4,11 @@ from pathlib import Path
 
 
 class Settings:
-    POST_URL: str = os.getenv("TRACKING_POST_URL", "https://nerds-rats-hackathon.onrender.com/metrics")
-    INTERVAL: int = int(os.getenv("TRACKING_INTERVAL", "15"))  # segundos
-    LOG_LEVEL: str = os.getenv("LOG_LEVEL", "INFO")
-    LOG_RETENTION_DAYS: int = int(os.getenv("LOG_RETENTION_DAYS", "30"))
+    # Configurações mockadas diretamente no código
+    POST_URL: str = "https://nerds-rats-hackathon.onrender.com/metrics"
+    INTERVAL: int = 15  # segundos
+    LOG_LEVEL: str = "INFO"
+    LOG_RETENTION_DAYS: int = 30
     
     # Usando AppData no Windows ou /etc no Linux
     CONFIG_PATH: str = os.getenv(
@@ -30,39 +31,9 @@ class Settings:
         return None
 
     @staticmethod
-    def _save_config_value(key: str, value: str) -> None:
-        """Método interno para salvar um valor no arquivo de configuração."""
-        try:
-            os.makedirs(os.path.dirname(Settings.CONFIG_PATH), exist_ok=True)
-            
-            # Lê configuração existente
-            config = {}
-            if os.path.exists(Settings.CONFIG_PATH):
-                with open(Settings.CONFIG_PATH, "r") as f:
-                    for line in f:
-                        if "=" in line:
-                            k, v = line.strip().split("=", 1)
-                            config[k] = v
-            
-            # Atualiza valor
-            config[key] = value
-
-            # Salva todas as configurações
-            with open(Settings.CONFIG_PATH, "w") as f:
-                for k, v in config.items():
-                    f.write(f"{k}={v}\n")
-        except Exception as e:
-            print(f"Falha ao salvar configuração: {e}")
-
-    @staticmethod
     def read_email() -> Optional[str]:
         """Lê o email do arquivo de configuração."""
         return Settings._read_config_value("email")
-
-    @staticmethod
-    def save_email(email: str) -> None:
-        """Salva o email no arquivo de configuração."""
-        Settings._save_config_value("email", email)
 
     @staticmethod
     def read_github() -> Optional[str]:
@@ -70,9 +41,41 @@ class Settings:
         return Settings._read_config_value("github")
 
     @staticmethod
+    def save_email(email: str) -> None:
+        """Salva o email no arquivo de configuração."""
+        Settings._save_config_value("email", email)
+
+    @staticmethod
     def save_github(github: str) -> None:
         """Salva o usuário do GitHub no arquivo de configuração."""
         Settings._save_config_value("github", github)
 
+    @staticmethod
+    def _save_config_value(key: str, value: str) -> None:
+        """Método interno para salvar um valor no arquivo de configuração."""
+        os.makedirs(os.path.dirname(Settings.CONFIG_PATH), exist_ok=True)
+        
+        # Lê configurações existentes
+        config = {}
+        if os.path.exists(Settings.CONFIG_PATH):
+            try:
+                with open(Settings.CONFIG_PATH, "r") as f:
+                    for line in f:
+                        if "=" in line:
+                            k, v = line.strip().split("=", 1)
+                            config[k] = v
+            except Exception:
+                pass
+
+        # Atualiza ou adiciona novo valor
+        config[key] = value
+
+        # Salva todas as configurações
+        try:
+            with open(Settings.CONFIG_PATH, "w") as f:
+                for k, v in config.items():
+                    f.write(f"{k}={v}\n")
+        except Exception as e:
+            print(f"Falha ao salvar configuração: {e}")
 
 settings = Settings()

@@ -1,11 +1,6 @@
 import signal
 import sys
 import os
-import sys
-from dotenv import load_dotenv
-
-# Carrega variáveis de ambiente do arquivo .env
-load_dotenv()
 
 # Adiciona o diretório raiz ao PYTHONPATH
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..")))
